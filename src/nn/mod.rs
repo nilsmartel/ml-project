@@ -95,11 +95,24 @@ impl Neuron {
         self.weights.push(self.bias);
         self.weights
     }
+
+    /// Compute the tanh of dot product + bias
+    fn compute(&self, values: &[Float]) -> Float {
+        (self
+            .weights
+            .iter()
+            .zip(values.iter())
+            .map(|(a, b)| a * b)
+            .sum::<Float>()
+            + self.bias)
+            .tanh()
+    }
 }
 
 #[cfg(test)]
 mod test {
     use super::Neuron;
+    #[test]
     fn test_neuron() {
         let neuron = Neuron::random(3);
 
