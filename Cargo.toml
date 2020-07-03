@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 nom = "6.0.0-alpha1"         # A byte-oriented, zero-copy, parser combinators library
+rand = "0.7.3"              # Random number generators and other randomness functionality. 
