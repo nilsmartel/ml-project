@@ -1,4 +1,5 @@
 mod data;
+mod nn;
 
 fn main() {
     let file = include_str!("../input");
