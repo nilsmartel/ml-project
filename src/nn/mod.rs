@@ -2,6 +2,13 @@ pub struct NeuralNetwork(Vec<Vec<Neuron>>);
 
 pub type Layout = Vec<usize>;
 
+fn amount_of_weights(l: &Layout) -> usize {
+    l.iter()
+        .zip(l[1..].iter())
+        .map(|(n1, n2)| (n1 + 1) * n2)
+        .sum()
+}
+
 impl NeuralNetwork {
     pub fn random(layers: Layout) -> NeuralNetwork {
         let layers = layers
@@ -17,7 +24,37 @@ impl NeuralNetwork {
         NeuralNetwork(layers)
     }
 
-    pub fn fromVector(weights: Vec<Float>, layers: Layout) -> NeuralNetwork {}
+    pub fn fromVector(weights: &[Float], layers: Layout) -> NeuralNetwork {
+        // assert that weights has the proper length
+        assert_eq!(weights.len(), amount_of_weights(&layers));
+
+        let info =
+            layers
+                .iter()
+                .zip(layers[1..].iter())
+                .map(|(prev, current): (&usize, &usize)| {
+                    // `prev` states the amount of neurons in the previous layer
+                    // while `current` is the amount of neurons desired for the current one.
+
+                    // returns the needed amount of weights for this specific layer
+                    ((*prev + 1), current)
+                });
+
+        let mut acc = 0;
+        let mut layers: Vec<Vec<Neuron>> = Vec::new();
+        for (needed, amount) in info {
+            let mut layer = Vec::new();
+            for _ in 0..*amount {
+                layer.push(Neuron::fromVector(&weights[acc..acc + needed]));
+
+                acc += needed;
+            }
+
+            layers.push(layer);
+        }
+
+        NeuralNetwork(layers)
+    }
 }
 
 type Float = f32;
@@ -31,6 +68,13 @@ impl Neuron {
     fn random(weight_count: usize) -> Neuron {
         let weights = (0..weight_count).map(|_| rand::random::<Float>()).collect();
         let bias = rand::random();
+
+        Neuron { weights, bias }
+    }
+
+    fn fromVector(v: &[Float]) -> Neuron {
+        let weights = v[..v.len() - 1].to_vec();
+        let bias = v[v.len() - 1];
 
         Neuron { weights, bias }
     }
