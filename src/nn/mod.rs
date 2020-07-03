@@ -64,6 +64,17 @@ impl NeuralNetwork {
             })
         })
     }
+
+    pub fn compute(&self, input: Vec<Float>) -> Vec<Float> {
+        assert_eq!(input.len(), self.0[0][0].get_input_size());
+
+        self.0.iter().fold(input, |values, neurons| {
+            neurons
+                .iter()
+                .map(|neuron| neuron.compute(&values))
+                .collect::<Vec<Float>>()
+        })
+    }
 }
 
 type Float = f32;
@@ -77,6 +88,10 @@ struct Neuron {
 impl Eq for Neuron {}
 
 impl Neuron {
+    fn get_input_size(&self) -> usize {
+        self.weights.len()
+    }
+
     fn random(weight_count: usize) -> Neuron {
         let weights = (0..weight_count).map(|_| rand::random::<Float>()).collect();
         let bias = rand::random();
