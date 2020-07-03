@@ -1,3 +1,4 @@
+use crate::nn::Float;
 use nom::IResult;
 use std::collections::{HashMap, HashSet};
 
@@ -17,33 +18,28 @@ pub fn get_data(file: &str) -> Vec<Data> {
 
     codes
         .into_iter()
-        .map(
-            |ColorCode {
-                 color: color,
-                 name: name,
-             }| Data {
-                features: [
-                    color.0 as f64 / 255.0,
-                    color.1 as f64 / 255.0,
-                    color.2 as f64 / 255.0,
-                ],
-                label_amount,
-                label_id: map[name],
-            },
-        )
+        .map(|ColorCode { color, name }| Data {
+            features: [
+                color.0 as Float / 255.0,
+                color.1 as Float / 255.0,
+                color.2 as Float / 255.0,
+            ],
+            label_amount,
+            label_id: map[name],
+        })
         .collect()
 }
 
 #[derive(Debug)]
 pub struct Data {
-    pub features: [f64; 3],
+    pub features: [Float; 3],
     label_amount: u32,
     label_id: u32,
 }
 
 impl Data {
-    pub fn get_labels(&self) -> Vec<f64> {
-        let mut labels = vec![0.0f64; self.label_amount as usize];
+    pub fn get_labels(&self) -> Vec<Float> {
+        let mut labels = vec![0.0; self.label_amount as usize];
         labels[self.label_id as usize] = 1.0;
 
         return labels;

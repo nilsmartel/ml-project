@@ -77,7 +77,7 @@ impl NeuralNetwork {
     }
 }
 
-type Float = f32;
+pub type Float = f32;
 
 #[derive(Clone, Debug, PartialEq)]
 struct Neuron {
