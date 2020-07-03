@@ -55,14 +55,26 @@ impl NeuralNetwork {
 
         NeuralNetwork(layers)
     }
+
+    pub fn toVector(self) -> Vec<Float> {
+        self.0.into_iter().fold(Vec::new(), |vec, layer| {
+            layer.into_iter().fold(vec, |mut vec, neuron| {
+                vec.extend(neuron.toVector());
+                vec
+            })
+        })
+    }
 }
 
 type Float = f32;
 
+#[derive(Clone, Debug, PartialEq)]
 struct Neuron {
     weights: Vec<Float>,
     bias: Float,
 }
+
+impl Eq for Neuron {}
 
 impl Neuron {
     fn random(weight_count: usize) -> Neuron {
@@ -77,5 +89,20 @@ impl Neuron {
         let bias = v[v.len() - 1];
 
         Neuron { weights, bias }
+    }
+
+    fn toVector(mut self) -> Vec<Float> {
+        self.weights.push(self.bias);
+        self.weights
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::Neuron;
+    fn test_neuron() {
+        let neuron = Neuron::random(3);
+
+        assert_eq!(neuron.clone(), Neuron::fromVector(&neuron.toVector()))
     }
 }
