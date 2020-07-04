@@ -19,7 +19,7 @@ pub fn get_data(file: &str) -> Vec<Data> {
     codes
         .into_iter()
         .map(|ColorCode { color, name }| Data {
-            features: [
+            features: vec![
                 color.0 as Float / 255.0,
                 color.1 as Float / 255.0,
                 color.2 as Float / 255.0,
@@ -32,12 +32,16 @@ pub fn get_data(file: &str) -> Vec<Data> {
 
 #[derive(Debug)]
 pub struct Data {
-    pub features: [Float; 3],
+    pub features: Vec<Float>,
     label_amount: u32,
     label_id: u32,
 }
 
 impl Data {
+    pub fn get_label_id(&self) -> u32 {
+        self.label_id
+    }
+
     pub fn get_labels(&self) -> Vec<Float> {
         let mut labels = vec![0.0; self.label_amount as usize];
         labels[self.label_id as usize] = 1.0;
